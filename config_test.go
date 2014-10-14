@@ -22,3 +22,10 @@ func TestTriggers(t *testing.T) {
 
 	assert.Equal(t, expected, c.Triggers, "Test config")
 }
+
+func TestAlternateFile(t *testing.T) {
+	config := Config{}
+  c := config.Load("./dropboy_test.yml")
+
+	assert.Equal(t, "alternate file", c.DefaultUrl, "Test config")
+}

@@ -16,8 +16,21 @@ type Trigger struct {
 	Actions map[string][]string
 }
 
-func (c Config) Load() Config {
-	return loadYaml("./dropboy.yml")
+func (c Config) Load(args ...interface{}) Config {
+  configFile := "./dropboy.yml"
+
+  // an example of how to do default parameters in go
+  // http://joneisen.tumblr.com/post/53695478114/golang-and-default-values
+  for _, arg := range args {
+    switch t := arg.(type) {
+    case string:
+      configFile = t
+    default:
+      panic("Unknown argument")
+    }
+  }
+
+	return loadYaml(configFile)
 }
 
 func check(e error) {
