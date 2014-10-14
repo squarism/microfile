@@ -14,7 +14,7 @@ Components
 ==========
 - Configuration Manager
   - loads configuration from YAML file, supports one-to-many triggers
-- Trigger Object
+- Watcher
   - holds list of watches
   - register_watch()
 - Notifier

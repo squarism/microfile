@@ -11,11 +11,6 @@ type Config struct {
 	Triggers   map[string][]string
 }
 
-type Trigger struct {
-	Path    string
-	Actions map[string][]string
-}
-
 func (c Config) Load(args ...interface{}) Config {
   configFile := "./dropboy.yml"
 
