@@ -25,6 +25,8 @@ Temporary Items
 *.o
 *.a
 *.so
+bin
+pkg
 
 # Folders
 _obj
