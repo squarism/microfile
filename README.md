@@ -5,8 +5,8 @@ Main features
   ---
   default_url: http://localhost:3000
   triggers:
-    - ./spec/tmp/dropbox:
-    - /api/run_loader
+    /var/www/uploads/resumes:
+      - /api/pdf_convert
 
 
 
@@ -27,15 +27,13 @@ Components
 
 Need
 ====
-1. YAML reader
-
-2. Filesystem listener (https://github.com/howeyc/fsnotify)
+1. Filesystem listener (https://github.com/howeyc/fsnotify)
   - import "gopkg.in/fsnotify.v1"  (new API, recommended to use this as
     it's going into the stdlib)
 
-3. Net/http lib (http://www.gorillatoolkit.org/pkg/http)
+1. Net/http lib (http://www.gorillatoolkit.org/pkg/http).  Or not if stdlib is fine.
 
-4. Some way to run it.
+1. Some way to run it.
 desc "watch file for changes"
 task :watch do
   require './lib/dropboy.rb'
@@ -45,4 +43,4 @@ end
 
 task :default => :watch
 
-5. Dependencies with Godeps (bundler)
+1. A way to test the filesystem watch?  How?
