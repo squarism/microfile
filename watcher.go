@@ -5,9 +5,9 @@ type Watcher struct {
 }
 
 func (w *Watcher) Register(path string, urls []string) {
-  if (w.Watches == nil) {
-    w.Watches = make(map[string][]string)
-  }
+	if w.Watches == nil {
+		w.Watches = make(map[string][]string)
+	}
 
-  w.Watches[path] = urls
+	w.Watches[path] = urls
 }

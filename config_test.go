@@ -25,7 +25,7 @@ func TestTriggers(t *testing.T) {
 
 func TestAlternateFile(t *testing.T) {
 	config := Config{}
-  c := config.Load("./dropboy_test.yml")
+	c := config.Load("./dropboy_test.yml")
 
 	assert.Equal(t, "alternate file", c.DefaultUrl, "Test config")
 }

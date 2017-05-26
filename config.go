@@ -12,18 +12,18 @@ type Config struct {
 }
 
 func (c Config) Load(args ...interface{}) Config {
-  configFile := "./dropboy.yml"
+	configFile := "./dropboy.yml"
 
-  // an example of how to do default parameters in go
-  // http://joneisen.tumblr.com/post/53695478114/golang-and-default-values
-  for _, arg := range args {
-    switch t := arg.(type) {
-    case string:
-      configFile = t
-    default:
-      panic("Unknown argument")
-    }
-  }
+	// an example of how to do default parameters in go
+	// http://joneisen.tumblr.com/post/53695478114/golang-and-default-values
+	for _, arg := range args {
+		switch t := arg.(type) {
+		case string:
+			configFile = t
+		default:
+			panic("Unknown argument")
+		}
+	}
 
 	return loadYaml(configFile)
 }
