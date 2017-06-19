@@ -1,5 +1,0 @@
----
-default_url: http://localhost:9876
-triggers:
-  /var/www/resumes/dropbox:
-    - /api/convert_doc

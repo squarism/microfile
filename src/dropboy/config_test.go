@@ -2,11 +2,12 @@ package dropboy
 
 import (
 	"fmt"
-	"github.com/mitchellh/go-homedir"
-	"github.com/stretchr/testify/assert"
 	"log"
 	"os"
 	"testing"
+
+	homedir "github.com/mitchellh/go-homedir"
+	"github.com/stretchr/testify/assert"
 )
 
 func fixturesDirectory() string {
@@ -32,18 +33,25 @@ func TestDefaultURLConfig(t *testing.T) {
 	c := new(Config)
 	c.Configure(fixturesDirectory())
 
-	assert.Equal(t, "http://localhost:9876", c.DefaultUrl, "Test config")
+	assert.Equal(t, "http://localhost:9876", c.DefaultURL, "Test config defaults")
 }
 
-func TestTriggers(t *testing.T) {
-	var expected = map[string][]string{
-		"/var/www/resumes/dropbox": {"/api/convert_doc"},
+// This deeply tests the config in fixtures
+func TestActions(t *testing.T) {
+	var expected = []Action{
+		{
+			Type: "http",
+			Options: map[string]string{
+				"send_file": "true",
+			},
+		},
 	}
 
 	c := new(Config)
 	c.Configure(fixturesDirectory())
+	watches := c.Watches
 
-	assert.Equal(t, expected, c.Triggers, "Test triggers")
+	assert.Equal(t, expected, watches[0].Actions, "Test actions from config file")
 }
 
 func TestHomeConfigDir(t *testing.T) {

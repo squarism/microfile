@@ -2,26 +2,48 @@ package dropboy
 
 import (
 	"fmt"
+	"io/ioutil"
+	"log"
+
+	"github.com/hashicorp/hcl"
 	"github.com/mitchellh/go-homedir" // avoids cgo cross compile issues
 	"github.com/spf13/viper"          // leaning heavily on viper for configuration
-	"log"
 )
 
-// Config represents a ringu configuration
 type Config struct {
-	DefaultUrl string // `yaml:"default_url"`
-	Triggers   map[string][]string
+	DefaultURL string  `hcl:"default_url"`
+	Watches    []Watch `hcl:"watch"`
+}
+
+type Watch struct {
+	Path    string   `hcl:",key"`
+	Actions []Action `hcl:"actions"`
+}
+
+type Action struct {
+	Type    string            `hcl:",key"`
+	Options map[string]string `hcl:"options" hcle:"omitempty"`
 }
 
 // read in config defaults and populate our config struct
 func populateConfig(c *Config) {
 	err := viper.ReadInConfig()
-
-	c.DefaultUrl = viper.GetString("default_url")
-	c.Triggers = viper.GetStringMapStringSlice("triggers")
-
 	if err != nil {
-		panic(fmt.Errorf("Fatal error config file: %s \n", err))
+		panic(fmt.Errorf("Can't read config file: %s \n", err))
+	}
+
+	// var config Config
+	// because viper doesn't pass HCL flags down for auto-key niceness
+	// lets just bypass viper a bit
+	viperConfigFileContents, err := ioutil.ReadFile(viper.GetViper().ConfigFileUsed())
+	if err != nil {
+		panic(fmt.Errorf("Can't read file, %v", err))
+	}
+
+	// read everything into the config reference (c), this is like &config from the HCL examples
+	err = hcl.Decode(c, string(viperConfigFileContents))
+	if err != nil {
+		panic(fmt.Errorf("Problem with the HCL config file, %v", err))
 	}
 }
 
@@ -38,9 +60,9 @@ func (c *Config) homeConfigDirectory() string {
 
 // set config options and default values in the config
 func setConfigurationDefaults() {
-	viper.SetDefault("DefaultUrl", "http://localhost:3000")
+	// viper.SetDefault("DefaultURL", "http://localhost:3000")
 	viper.SetConfigName("dropboy")
-	viper.SetConfigType("yaml")
+	viper.SetConfigType("hcl")
 }
 
 // Configure uses viper to manage configuration
