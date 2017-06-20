@@ -44,3 +44,9 @@ end
 task :default => :watch
 
 1. A way to test the filesystem watch?  How?
+2. Generic handler for things other than web?  The config file would have to have like handler_type or something in it.
+3. Recursive is a problem.  If supported, protection is needed.  What if "/" is watched?
+4. Certain events are ignored, like chmod.
+5. Sending the file contents is probably useful.  Need a switch for that.
+6. If you do go recursive and you have a rules definition based on a filesystem hierarchy then you'll need to
+   have a hierarchical rule system dude.  :(  Would child rules override children?

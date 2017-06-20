@@ -71,6 +71,12 @@
 			"path": "/difflib"
 		},
 		{
+			"importpath": "github.com/rjeczalik/notify",
+			"repository": "https://github.com/rjeczalik/notify",
+			"revision": "88a54d914928e1faebb1c2195605dc87bd98dc27",
+			"branch": "master"
+		},
+		{
 			"importpath": "github.com/spf13/afero",
 			"repository": "https://github.com/spf13/afero",
 			"revision": "9be650865eab0c12963d8753212f4f9c66cdcf12",

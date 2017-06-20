@@ -1,4 +1,4 @@
-package dropboy
+package config
 
 import (
 	"fmt"
@@ -16,7 +16,7 @@ func fixturesDirectory() string {
 		log.Fatal(err)
 	}
 
-	return fmt.Sprintf("%s/../../fixtures", pwd)
+	return fmt.Sprintf("%s/../../../fixtures", pwd)
 }
 
 func patchEnv(key, value string) func() {

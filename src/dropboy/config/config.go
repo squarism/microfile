@@ -1,4 +1,4 @@
-package dropboy
+package config
 
 import (
 	"fmt"
@@ -32,7 +32,6 @@ func populateConfig(c *Config) {
 		panic(fmt.Errorf("Can't read config file: %s \n", err))
 	}
 
-	// var config Config
 	// because viper doesn't pass HCL flags down for auto-key niceness
 	// lets just bypass viper a bit
 	viperConfigFileContents, err := ioutil.ReadFile(viper.GetViper().ConfigFileUsed())
@@ -53,7 +52,7 @@ func (c *Config) homeConfigDirectory() string {
 		log.Panic(err)
 	}
 
-	// This will allow users to put the config in ~/.ringu/ringu.yml
+	// This will allow users to put the config in ~/.dropboy/dropboy.yml
 	homeConfigDirectory := fmt.Sprintf("%s/.dropboy/", home)
 	return homeConfigDirectory
 }
