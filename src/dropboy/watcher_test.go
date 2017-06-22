@@ -2,8 +2,6 @@ package dropboy
 
 import (
 	"fmt"
-	"log"
-	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -12,17 +10,6 @@ import (
 )
 
 var directoryToWatch string = "./../../fixtures/dropbox"
-
-// We have to duplicate this testing helper method from another test file.
-// Shared test code in Go is either duplicated or documented from godoc.  Which do I want?
-func fixturesDirectory() string {
-	pwd, err := os.Getwd()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	return fmt.Sprintf("%s/../../fixtures", pwd)
-}
 
 func TestRegisterNothing(t *testing.T) {
 	watcher := NewWatcher()
@@ -57,12 +44,10 @@ func TestRegisterWatches(t *testing.T) {
 }
 
 func TestRegisterFromConfig(t *testing.T) {
-	publicFixturesPath := fmt.Sprintf("%s/dropbox", fixturesDirectory())
-
 	var config = config.Config{
 		Watches: []config.Watch{
 			{
-				Path: publicFixturesPath,
+				Path: directoryToWatch,
 				Actions: []config.Action{
 					{
 						Type:    "http",
@@ -76,7 +61,7 @@ func TestRegisterFromConfig(t *testing.T) {
 	watcher := NewWatcher()
 	defer watcher.Stop()
 	expected := map[string][]string{
-		publicFixturesPath: []string{"http"},
+		directoryToWatch: []string{"http"},
 	}
 
 	watcher.RegisterWatchesFromConfig(config)

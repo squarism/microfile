@@ -10,6 +10,9 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+// TODO: if relative directory paths work here then we should just replace
+// this test helper with a string like
+// var directoryToWatch string = "./../../fixtures"
 func fixturesDirectory() string {
 	pwd, err := os.Getwd()
 	if err != nil {
