@@ -8,11 +8,11 @@ import (
 	"dropboy/handler"
 )
 
+// this would change as more action types are added
 var handlerNames = [2]string{"http", "log"}
 
-var handlerBleh = map[string]handler.Handler{
-	"http": &handler.HTTP{},
-	"log":  &handler.Log{},
+type HandlerFinder interface {
+	HandlersFor(path string, config config.Config) []handler.Handler
 }
 
 type HandlerConfig struct {
@@ -48,6 +48,7 @@ func (handlerConfig *HandlerConfig) HandlersFor(path string, config config.Confi
 	for _, watch := range config.Watches {
 		if watch.Path == dir {
 			for _, action := range watch.Actions {
+				// this would change as more action types are added
 				switch action.Type {
 				case "http":
 					handler := &handler.HTTP{}

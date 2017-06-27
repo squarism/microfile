@@ -9,7 +9,6 @@ import (
 )
 
 type HTTP struct {
-	Handler
 	Path string
 }
 
