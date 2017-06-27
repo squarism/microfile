@@ -9,32 +9,30 @@ import (
 	"dropboy/config"
 )
 
-// TODO: rename this whole thing to Dropboy -- it's really the top level thing
-
-type watcher struct {
+type dropboy struct {
 	Watches       map[string][]string
 	Notifier      *fsnotify.Watcher
 	HandlerConfig HandlerFinder
 	Config        *config.Config
 }
 
-func NewWatcher() watcher {
+func NewDropboy() dropboy {
 	notifier, err := fsnotify.NewWatcher()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	w := watcher{}
-	w.Notifier = notifier
+	d := dropboy{}
+	d.Notifier = notifier
 
-	return w
+	return d
 }
 
-func (w *watcher) Stop() {
+func (w *dropboy) Stop() {
 	w.Notifier.Close()
 }
 
-func (w *watcher) Register(path string, actions []string) {
+func (w *dropboy) Register(path string, actions []string) {
 	if w.Watches == nil {
 		w.Watches = make(map[string][]string)
 	}
@@ -50,11 +48,11 @@ func (w *watcher) Register(path string, actions []string) {
 	}
 
 	// TODO: I don't know what this is really doing for us here
-	// a list of paths for later use?  The filesystem watcher is stateless.
+	// a list of paths for later use?  The filesystem dropboy is stateless.
 	w.Watches[absPath] = actions
 }
 
-func (w *watcher) RegisterWatchesFromConfig(c *config.Config) {
+func (w *dropboy) RegisterWatchesFromConfig(c *config.Config) {
 	w.Config = c
 	w.HandlerConfig = &HandlerConfig{}
 
@@ -67,9 +65,9 @@ func (w *watcher) RegisterWatchesFromConfig(c *config.Config) {
 	}
 }
 
-// TODO: we are completely ignoring the watcher.Errors channel here
+// TODO: we are completely ignoring the dropboy.Errors channel here
 // create another method to handle those
-func (w *watcher) HandleFilesystemEvents(channel chan fsnotify.Event) {
+func (w *dropboy) HandleFilesystemEvents(channel chan fsnotify.Event) {
 	select {
 	case event := <-channel:
 		path := event.Name

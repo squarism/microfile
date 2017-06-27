@@ -22,7 +22,7 @@ func fixturesDirectory() string {
 
 var directoryToWatch string = fixturesDirectory()
 
-var watcherValidConfig = config.Config{
+var dropboyValidConfig = config.Config{
 	DefaultURL: "http://somewhere/valid_config",
 	Watches: []config.Watch{
 		{
@@ -38,34 +38,34 @@ var watcherValidConfig = config.Config{
 }
 
 func TestRegisterNothing(t *testing.T) {
-	watcher := NewWatcher()
-	defer watcher.Stop()
+	dropboy := NewDropboy()
+	defer dropboy.Stop()
 
-	assert.Equal(t, 0, len(watcher.Watches))
+	assert.Equal(t, 0, len(dropboy.Watches))
 }
 
 func TestRegisterWatch(t *testing.T) {
-	watcher := NewWatcher()
-	defer watcher.Stop()
+	dropboy := NewDropboy()
+	defer dropboy.Stop()
 
-	watcher.Register(directoryToWatch, []string{"http://localhost:3000/resumes"})
+	dropboy.Register(directoryToWatch, []string{"http://localhost:3000/resumes"})
 
-	assert.Equal(t, 1, len(watcher.Watches))
+	assert.Equal(t, 1, len(dropboy.Watches))
 }
 
 func TestRegisterWatches(t *testing.T) {
 	realEstateDirectory := fmt.Sprint(directoryToWatch, "/real_estate")
 	musicDirectory := fmt.Sprint(directoryToWatch, "/music")
-	watcher := NewWatcher()
-	defer watcher.Stop()
+	dropboy := NewDropboy()
+	defer dropboy.Stop()
 
-	watcher.Register(realEstateDirectory, []string{"http://localhost:3000/image_shrinker"})
-	watcher.Register(musicDirectory, []string{
+	dropboy.Register(realEstateDirectory, []string{"http://localhost:3000/image_shrinker"})
+	dropboy.Register(musicDirectory, []string{
 		"http://localhost:3000/copyright_alerter",
 		"http://localhost:3000/recompressor",
 	})
 
-	assert.Equal(t, 2, len(watcher.Watches))
+	assert.Equal(t, 2, len(dropboy.Watches))
 }
 
 func TestRegisterFromConfig(t *testing.T) {
@@ -74,23 +74,23 @@ func TestRegisterFromConfig(t *testing.T) {
 		log.Fatal("Fixtures directory is missing.")
 	}
 
-	watcher := NewWatcher()
-	defer watcher.Stop()
+	dropboy := NewDropboy()
+	defer dropboy.Stop()
 	expected := map[string][]string{
 		dir: []string{"http"},
 	}
 
-	watcher.RegisterWatchesFromConfig(&watcherValidConfig)
+	dropboy.RegisterWatchesFromConfig(&dropboyValidConfig)
 
-	assert.Equal(t, expected, watcher.Watches)
+	assert.Equal(t, expected, dropboy.Watches)
 }
 
 func TestRememberConfig(t *testing.T) {
-	watcher := NewWatcher()
-	watcher.RegisterWatchesFromConfig(&watcherValidConfig)
+	dropboy := NewDropboy()
+	dropboy.RegisterWatchesFromConfig(&dropboyValidConfig)
 	expected := "http://somewhere/valid_config"
 
-	assert.Equal(t, expected, watcher.Config.DefaultURL)
+	assert.Equal(t, expected, dropboy.Config.DefaultURL)
 }
 
 // wow mocking in Go is crazy hard
@@ -119,8 +119,8 @@ func (m *MockHandler) Init(action config.Action) error {
 var mockHandlers = []handler.Handler{}
 
 func TestIncomingFilesystemEvents(t *testing.T) {
-	watcher := NewWatcher()
-	watcher.RegisterWatchesFromConfig(&watcherValidConfig)
+	dropboy := NewDropboy()
+	dropboy.RegisterWatchesFromConfig(&dropboyValidConfig)
 	mockHandlerConfig := new(MockHandlerConfig)
 	changedFile, _ := filepath.Abs(fmt.Sprintf("%s/file_that_changed.txt", directoryToWatch))
 
@@ -131,19 +131,20 @@ func TestIncomingFilesystemEvents(t *testing.T) {
 	mockHandler.On("Handle", event)
 	mockHandlers = append(mockHandlers, mockHandler)
 
-	watcher.HandlerConfig = mockHandlerConfig
+	dropboy.HandlerConfig = mockHandlerConfig
 	mockHandlerConfig.On("HandlersFor", changedFile).Return(mockHandlers)
 
+	// we need to make sure our test doesn't exit too soon
 	done := make(chan bool, 2)
 
 	go func(done chan bool) {
-		watcher.HandleFilesystemEvents(channel)
+		dropboy.HandleFilesystemEvents(channel)
 		done <- true
 	}(done)
 
 	go func(done chan bool) {
 		channel <- event
-		time.Sleep(time.Millisecond * 1000)
+		time.Sleep(time.Millisecond)
 		done <- true
 	}(done)
 
