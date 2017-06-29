@@ -11,6 +11,7 @@ import (
 )
 
 var validConfig = config.Config{
+	DefaultURL: "http://localhost:3000/",
 	Watches: []config.Watch{
 		{
 			Path: "/tmp/foo",
@@ -58,6 +59,16 @@ func TestHandlersFor(t *testing.T) {
 	path := handlers[0].(*handler.HTTP).Path
 
 	assert.Equal(t, "/remote/server/path", path)
+}
+
+func TestDefaultsFromHandlerConfig(t *testing.T) {
+	handlerConfig := new(HandlerConfig)
+	handlers := handlerConfig.HandlersFor("/tmp/foo/bleh.txt", validConfig)
+
+	expected := "http://localhost:3000/"
+	url := handlers[0].(*handler.HTTP).DefaultURL
+
+	assert.Equal(t, expected, url)
 }
 
 func TestIgnoreEvents(t *testing.T) {

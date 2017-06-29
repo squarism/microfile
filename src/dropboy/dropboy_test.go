@@ -108,7 +108,6 @@ type MockHandler struct {
 }
 
 func (m *MockHandler) Handle(event fsnotify.Event) {
-	log.Println("OMG MOCK HANDLER")
 	m.Called(event)
 }
 

@@ -190,6 +190,12 @@
 			"path": "/unicode/norm"
 		},
 		{
+			"importpath": "gopkg.in/jarcoal/httpmock.v1",
+			"repository": "https://gopkg.in/jarcoal/httpmock.v1",
+			"revision": "cf52904a3cf0f78f199ecade6a6df8e245d5b25a",
+			"branch": "v1"
+		},
+		{
 			"importpath": "gopkg.in/yaml.v2",
 			"repository": "https://gopkg.in/yaml.v2",
 			"revision": "cd8b52f8269e0feb286dfeef29f8fe4d5b397e0b",

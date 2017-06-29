@@ -53,7 +53,10 @@ func (handlerConfig *HandlerConfig) HandlersFor(path string, config config.Confi
 				// this would change as more action types are added
 				switch action.Type {
 				case "http":
-					handler := &handler.HTTP{}
+					handler := &handler.HTTP{DefaultURL: config.DefaultURL}
+					if action.Options["send_file"] == "true" {
+						handler.SendContents = true
+					}
 					handler.Init(action)
 					handlers = append(handlers, handler)
 				}
