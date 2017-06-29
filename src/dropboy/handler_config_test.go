@@ -3,6 +3,7 @@ package dropboy
 import (
 	"testing"
 
+	"github.com/fsnotify/fsnotify"
 	"github.com/stretchr/testify/assert"
 
 	"dropboy/config"
@@ -55,5 +56,15 @@ func TestHandlersFor(t *testing.T) {
 	handlers := handlerConfig.HandlersFor("/tmp/foo/bleh.txt", validConfig)
 
 	path := handlers[0].(*handler.HTTP).Path
+
 	assert.Equal(t, "/remote/server/path", path)
+}
+
+func TestIgnoreEvents(t *testing.T) {
+	event := fsnotify.Event{Name: "bleh.txt", Op: fsnotify.Chmod}
+	handlerConfig := new(HandlerConfig)
+
+	result := handlerConfig.IsRelevantEvent(event)
+
+	assert.Equal(t, false, result)
 }
