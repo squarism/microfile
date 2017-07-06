@@ -78,7 +78,14 @@ func (w *dropboy) HandleFilesystemEvents(channel chan fsnotify.Event) {
 		// send the event to the method defined by the interface?  We validate the config elsewhere.
 		// We shouldn't have illegal handlers.
 		for _, h := range handlers {
-			h.Handle(event)
+			if w.isRelevantEvent(event) {
+				h.Handle(event)
+			}
 		}
 	}
+}
+
+// global ignore of sorts
+func (d *dropboy) isRelevantEvent(event fsnotify.Event) bool {
+	return (event.Op != fsnotify.Chmod)
 }

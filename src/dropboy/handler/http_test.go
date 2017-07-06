@@ -8,6 +8,8 @@ import (
 	"github.com/fsnotify/fsnotify"
 	"github.com/stretchr/testify/assert"
 	httpmock "gopkg.in/jarcoal/httpmock.v1"
+
+	"dropboy/config"
 )
 
 func TestHttpSendEvent(t *testing.T) {
@@ -32,9 +34,6 @@ func TestHttpSendEvent(t *testing.T) {
 	assert.Equal(t, 1, calls)
 }
 
-// func TestHttpSendFile(t *testing.T) {
-// }
-
 func TestUsesDefaultWhenHostIsBlank(t *testing.T) {
 	httpHandler := HTTP{DefaultURL: "http://my.server/"}
 	url := httpHandler.pathCompletion("/api")
@@ -51,4 +50,17 @@ func TestUsesDefaultWhenFullURL(t *testing.T) {
 	expected := "http://thingy.biz/api"
 
 	assert.Equal(t, expected, url)
+}
+
+func TestConfiguresPath(t *testing.T) {
+	httpHandler := new(HTTP)
+	action := config.Action{
+		Type: "http",
+		Options: map[string]string{
+			"path": "/images",
+		},
+	}
+	httpHandler.Init(action)
+
+	assert.Equal(t, "/images", httpHandler.Path)
 }

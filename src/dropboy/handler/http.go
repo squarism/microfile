@@ -46,14 +46,16 @@ func (h HTTP) Handle(event fsnotify.Event) {
 	client := &http.Client{}
 	response, err := client.Do(req)
 	if err != nil {
-		log.Println("HTTP error posting to %s", destinationURL)
+		log.Printf("HTTP error posting to: %s\n", destinationURL)
 	}
 
 	defer response.Body.Close()
 }
 
 func (h *HTTP) Init(action config.Action) error {
-	h.Path = action.Options["path"]
+	if action.Options["path"] != "" {
+		h.Path = action.Options["path"]
+	}
 	return nil
 }
 

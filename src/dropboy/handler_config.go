@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"path/filepath"
 
-	"github.com/fsnotify/fsnotify"
-
 	"dropboy/config"
 	"dropboy/handler"
 )
@@ -74,9 +72,4 @@ func validHandlerName(name string) bool {
 		}
 	}
 	return false
-}
-
-// global ignore of sorts
-func (handlerConfig *HandlerConfig) IsRelevantEvent(event fsnotify.Event) bool {
-	return (event.Op != fsnotify.Chmod)
 }
