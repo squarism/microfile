@@ -49,7 +49,11 @@ func (h HTTP) Handle(event fsnotify.Event) {
 		log.Printf("HTTP error posting to: %s\n", destinationURL)
 	}
 
-	defer response.Body.Close()
+	if response != nil {
+		defer response.Body.Close()
+	} else {
+		log.Printf("Empty HTTP response for: %s\n", destinationURL)
+	}
 }
 
 func (h *HTTP) Init(action config.Action) error {
