@@ -36,7 +36,7 @@ func (h HTTP) Handle(event fsnotify.Event) {
 	}
 	json, _ := json.Marshal(postPayload)
 
-	destinationURL := h.pathCompletion(h.Path)
+	destinationURL := PathCompletion(h.Path, h.DefaultURL)
 	req, err := http.NewRequest("POST", destinationURL, bytes.NewBuffer(json))
 	if err != nil {
 		log.Fatal("Can't make sense of destinationURL: %s", destinationURL)
@@ -66,14 +66,14 @@ func (h *HTTP) Init(action config.Action) error {
 // pathCompletion completes a URL is needed
 // if url is a partial path like /api then the path should
 // use the DefaultURL string from config
-func (h *HTTP) pathCompletion(s string) string {
+func PathCompletion(s string, defaultURL string) string {
 	u, err := url.Parse(s)
 	// TODO: this needs to go into the config validation
 	if err != nil {
 		log.Fatal("URL %s doesn't appear to be a URL.", u)
 	}
 
-	du, err := url.Parse(h.DefaultURL)
+	du, err := url.Parse(defaultURL)
 	if err != nil {
 		log.Fatal("What is configured as DefaultURL %s doesn't appear to be a URL.", u)
 	}
