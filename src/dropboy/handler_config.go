@@ -57,6 +57,10 @@ func (handlerConfig *HandlerConfig) HandlersFor(path string, config config.Confi
 					}
 					handler.Init(action)
 					handlers = append(handlers, handler)
+				case "imaginary":
+					handler := &handler.Imaginary{DefaultURL: config.DefaultURL}
+					handler.Init(action)
+					handlers = append(handlers, handler)
 				}
 			}
 		}
