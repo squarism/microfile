@@ -1,0 +1,11 @@
+default_url = "http://localhost:3000"
+
+# create this folder ahead of time
+watch "/Users/you/tmp/dropbox" {
+  action "http" {
+    options {
+      path = "http://localhost:3000/thumbnails.json"
+      send_file = "true"
+    }
+  }
+}

@@ -17,7 +17,7 @@ type Config struct {
 
 type Watch struct {
 	Path    string   `hcl:",key"`
-	Actions []Action `hcl:"actions"`
+	Actions []Action `hcl:"action"`
 }
 
 type Action struct {
