@@ -2,6 +2,8 @@ package main
 
 import (
 	"log"
+	"os"
+	"os/signal"
 
 	"dropboy"
 	"dropboy/config"
@@ -10,7 +12,7 @@ import (
 // var done = make(chan bool, 2)
 
 func main() {
-	log.Println("Starting Dropboy ...")
+	log.Println("Starting Dropboy.")
 
 	dboy := dropboy.NewDropboy()
 
@@ -18,8 +20,18 @@ func main() {
 	c.Configure()
 	dboy.RegisterWatchesFromConfig(c)
 
-	dboy.HandleFilesystemEvents(dboy.Notifier.Events)
-	dboy.Stop()
+	irq := make(chan os.Signal, 1)
+	signal.Notify(irq, os.Interrupt)
+	go func() {
+		for range irq {
+			log.Println("Stopping Dropboy.")
+			dboy.Stop()
+			os.Exit(1)
+		}
+	}()
 
-	log.Println("Stopping Dropboy ...")
+	for {
+		dboy.HandleFilesystemEvents(dboy.Notifier.Events)
+	}
+
 }

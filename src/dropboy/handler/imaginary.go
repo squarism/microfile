@@ -24,7 +24,13 @@ type Imaginary struct {
 	OutputDirectory string
 }
 
+// We can't process images from these events probably
+func (i *Imaginary) ignoredEvent(event fsnotify.Event) bool {
+	return (event.Op == fsnotify.Remove || event.Op == fsnotify.Chmod)
+}
+
 func (i Imaginary) Handle(event fsnotify.Event) {
+
 	file, _ := os.Open(event.Name)
 	defer file.Close()
 
@@ -43,7 +49,8 @@ func (i Imaginary) Handle(event fsnotify.Event) {
 
 	response, err := client.Do(r)
 	if err != nil {
-		log.Fatal("Problem with imaginary service: %s", err)
+		log.Printf("Problem with imaginary service: %s\n", err)
+		os.Exit(1)
 	}
 
 	if response.StatusCode == 200 {
