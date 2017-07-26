@@ -3,15 +3,16 @@ package config
 import (
 	"fmt"
 	"io/ioutil"
-	"log"
 
 	"github.com/hashicorp/hcl"
 	"github.com/mitchellh/go-homedir" // avoids cgo cross compile issues
-	"github.com/spf13/viper"          // leaning heavily on viper for configuration
+	log "github.com/sirupsen/logrus"
+	"github.com/spf13/viper" // leaning heavily on viper for configuration
 )
 
 type Config struct {
 	DefaultURL string  `hcl:"default_url"`
+	LogFile    string  `hcl:"log_file"`
 	Watches    []Watch `hcl:"watch"`
 }
 
@@ -29,27 +30,27 @@ type Action struct {
 func populateConfig(c *Config) {
 	err := viper.ReadInConfig()
 	if err != nil {
-		panic(fmt.Errorf("Can't read config file: %s \n", err))
+		log.WithFields(log.Fields{"lifecycle": "config"}).Fatal("Can't read config file")
 	}
 
 	// because viper doesn't pass HCL flags down for auto-key niceness
 	// lets just bypass viper a bit
 	viperConfigFileContents, err := ioutil.ReadFile(viper.GetViper().ConfigFileUsed())
 	if err != nil {
-		panic(fmt.Errorf("Can't read file, %v", err))
+		log.WithFields(log.Fields{"lifecycle": "config"}).Fatal("Can't read config file contents")
 	}
 
 	// read everything into the config reference (c), this is like &config from the HCL examples
 	err = hcl.Decode(c, string(viperConfigFileContents))
 	if err != nil {
-		panic(fmt.Errorf("Problem with the HCL config file, %v", err))
+		log.WithFields(log.Fields{"lifecycle": "config"}).Fatal("Problem with the HCL config file")
 	}
 }
 
 func (c *Config) homeConfigDirectory() string {
 	home, err := homedir.Dir()
 	if err != nil {
-		log.Panic(err)
+		log.WithFields(log.Fields{"lifecycle": "config"}).Fatal("Cannot tell what the home directory is")
 	}
 
 	// This will allow users to put the config in ~/.dropboy/dropboy.yml
@@ -72,6 +73,8 @@ func (c *Config) Configure(configPaths ...string) {
 	for _, path := range configPaths {
 		viper.AddConfigPath(path)
 	}
+
+	// TODO - add ENV option for the config path
 
 	// set up list of alternate config file paths
 	viper.AddConfigPath(c.homeConfigDirectory())

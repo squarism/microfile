@@ -1,10 +1,10 @@
 package dropboy
 
 import (
-	"log"
 	"path/filepath"
 
 	"github.com/fsnotify/fsnotify"
+	log "github.com/sirupsen/logrus"
 
 	"dropboy/config"
 )

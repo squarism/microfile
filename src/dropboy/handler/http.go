@@ -4,11 +4,11 @@ import (
 	"bytes"
 	"encoding/json"
 	"io/ioutil"
-	"log"
 	"net/http"
 	url "net/url"
 
 	"github.com/fsnotify/fsnotify"
+	log "github.com/sirupsen/logrus"
 
 	"dropboy/config"
 )
@@ -37,22 +37,32 @@ func (h HTTP) Handle(event fsnotify.Event) {
 	json, _ := json.Marshal(postPayload)
 
 	destinationURL := PathCompletion(h.Path, h.DefaultURL)
-	req, err := http.NewRequest("POST", destinationURL, bytes.NewBuffer(json))
-	if err != nil {
-		log.Fatal("Can't make sense of destinationURL: %s", destinationURL)
-	}
+
+	// at this point, the request has not been fired, so err here would be URL parsing errors
+	req, _ := http.NewRequest("POST", destinationURL, bytes.NewBuffer(json))
+
 	req.Header.Set("Content-Type", "application/json")
 
 	client := &http.Client{}
 	response, err := client.Do(req)
 	if err != nil {
-		log.Printf("HTTP error posting to: %s\n", destinationURL)
+		log.WithFields(
+			log.Fields{
+				"handler": "http",
+				"url":     destinationURL,
+			}).Warn("Problem while doing an http POST")
+
+		return
 	}
 
 	if response != nil {
 		defer response.Body.Close()
 	} else {
-		log.Printf("Empty HTTP response for: %s\n", destinationURL)
+		log.WithFields(
+			log.Fields{
+				"handler": "http",
+				"url":     destinationURL,
+			}).Warn("Empty HTTP response")
 	}
 }
 
@@ -70,12 +80,20 @@ func PathCompletion(s string, defaultURL string) string {
 	u, err := url.Parse(s)
 	// TODO: this needs to go into the config validation
 	if err != nil {
-		log.Fatal("URL %s doesn't appear to be a URL.", u)
+		log.WithFields(
+			log.Fields{
+				"handler": "http",
+				"url":     u,
+			}).Warn("URL doesn't appear to be a URL.")
 	}
 
 	du, err := url.Parse(defaultURL)
 	if err != nil {
-		log.Fatal("What is configured as DefaultURL %s doesn't appear to be a URL.", u)
+		log.WithFields(
+			log.Fields{
+				"handler": "http",
+				"url":     u,
+			}).Warn("What is configured as DefaultURL doesn't appear to be a URL.")
 	}
 
 	if u.Host == "" {

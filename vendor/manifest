@@ -77,6 +77,12 @@
 			"branch": "master"
 		},
 		{
+			"importpath": "github.com/sirupsen/logrus",
+			"repository": "https://github.com/sirupsen/logrus",
+			"revision": "8d4f6a97d3fe8725a31e3185c7a877a5e1dc6f09",
+			"branch": "master"
+		},
+		{
 			"importpath": "github.com/spf13/afero",
 			"repository": "https://github.com/spf13/afero",
 			"revision": "9be650865eab0c12963d8753212f4f9c66cdcf12",
@@ -188,6 +194,18 @@
 			"revision": "19e51611da83d6be54ddafce4a4af510cb3e9ea4",
 			"branch": "master",
 			"path": "/unicode/norm"
+		},
+		{
+			"importpath": "gopkg.in/airbrake/gobrake.v2",
+			"repository": "https://gopkg.in/airbrake/gobrake.v2",
+			"revision": "668876711219e8b0206e2994bf0a59d889c775aa",
+			"branch": "master"
+		},
+		{
+			"importpath": "gopkg.in/gemnasium/logrus-airbrake-hook.v2",
+			"repository": "https://gopkg.in/gemnasium/logrus-airbrake-hook.v2",
+			"revision": "e928b033a891c0175fb643d5aa0779e86325eb12",
+			"branch": "master"
 		},
 		{
 			"importpath": "gopkg.in/jarcoal/httpmock.v1",

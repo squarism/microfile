@@ -2,9 +2,9 @@ package handler
 
 import (
 	"io/ioutil"
-	"log"
 
 	"github.com/fsnotify/fsnotify"
+	log "github.com/sirupsen/logrus"
 
 	"bytes"
 	"io"
@@ -30,6 +30,9 @@ func (i *Imaginary) ignoredEvent(event fsnotify.Event) bool {
 }
 
 func (i Imaginary) Handle(event fsnotify.Event) {
+	if i.ignoredEvent(event) == true {
+		return
+	}
 
 	file, _ := os.Open(event.Name)
 	defer file.Close()
@@ -49,17 +52,32 @@ func (i Imaginary) Handle(event fsnotify.Event) {
 
 	response, err := client.Do(r)
 	if err != nil {
-		log.Printf("Problem with imaginary service: %s\n", err)
-		os.Exit(1)
+		log.WithFields(
+			log.Fields{
+				"handler":      "imaginary",
+				"changed_file": event.Name,
+				"url":          destinationURL,
+			}).Warn("Problem with imaginary service")
+		return
 	}
 
 	if response.StatusCode == 200 {
-		_, err = i.writeImage(response, event.Name)
+		filename, err := i.writeImage(response, event.Name)
 		if err != nil {
-			log.Fatal("Problem saving converted image: %s", err)
+			log.WithFields(
+				log.Fields{
+					"handler":      "imaginary",
+					"changed_file": event.Name,
+					"output_file":  filename,
+				}).Warn("Problem saving converted image")
 		}
 	} else {
-		log.Println("Imaginary couldn't convert the image %s", file.Name())
+		log.WithFields(
+			log.Fields{
+				"handler":      "imaginary",
+				"status_code":  response.StatusCode,
+				"changed_file": event.Name,
+			}).Warn("Imaginary response")
 	}
 
 }
@@ -73,7 +91,10 @@ func (i *Imaginary) Init(action config.Action) error {
 	if outputDirectory != "" {
 		i.OutputDirectory = outputDirectory
 	} else {
-		log.Fatal("output_directory for Imaginary needs to be set (where converted images are saved).")
+		log.WithFields(
+			log.Fields{
+				"handler": "imaginary",
+			}).Fatal("output_directory for Imaginary needs to be set (where converted images are saved)")
 	}
 	return nil
 }
@@ -84,11 +105,29 @@ func (i *Imaginary) writeImage(response *http.Response, filePath string) (string
 
 	bodyBytes, err := ioutil.ReadAll(response.Body)
 	if err != nil {
-		log.Fatal("Can't read response Body wtf: %s", err)
+		log.WithFields(
+			log.Fields{
+				"handler":     "imaginary",
+				"output_file": destinationFile,
+			}).Fatal("Can't read response Body")
 	}
 	defer response.Body.Close()
 
 	err = ioutil.WriteFile(destinationFile, bodyBytes, 0644)
+	if err != nil {
+		log.WithFields(
+			log.Fields{
+				"handler":          "imaginary",
+				"output_file":      destinationFile,
+				"output_directory": i.OutputDirectory,
+			}).Warn("Can't write file.  Does output_directory exist?")
+	} else {
+		log.WithFields(
+			log.Fields{
+				"handler":     "imaginary",
+				"output_file": destinationFile,
+			}).Info("Converted image.")
+	}
 
 	return destinationFile, nil
 }
