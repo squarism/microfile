@@ -36,7 +36,7 @@ func TestHttpSendEvent(t *testing.T) {
 
 func TestUsesDefaultWhenHostIsBlank(t *testing.T) {
 	httpHandler := HTTP{DefaultURL: "http://my.server/"}
-	url := httpHandler.pathCompletion("/api")
+	url := PathCompletion("/api", httpHandler.DefaultURL)
 
 	expected := "http://my.server/api"
 
@@ -45,7 +45,7 @@ func TestUsesDefaultWhenHostIsBlank(t *testing.T) {
 
 func TestUsesDefaultWhenFullURL(t *testing.T) {
 	httpHandler := HTTP{DefaultURL: "http://my.server/"}
-	url := httpHandler.pathCompletion("http://thingy.biz/api")
+	url := PathCompletion("http://thingy.biz/api", httpHandler.DefaultURL)
 
 	expected := "http://thingy.biz/api"
 

@@ -3,7 +3,6 @@ package dropboy
 import (
 	"testing"
 
-	"github.com/fsnotify/fsnotify"
 	"github.com/stretchr/testify/assert"
 
 	"dropboy/config"
@@ -69,13 +68,4 @@ func TestDefaultsFromHandlerConfig(t *testing.T) {
 	url := handlers[0].(*handler.HTTP).DefaultURL
 
 	assert.Equal(t, expected, url)
-}
-
-func TestIgnoreEvents(t *testing.T) {
-	event := fsnotify.Event{Name: "bleh.txt", Op: fsnotify.Chmod}
-	handlerConfig := new(HandlerConfig)
-
-	result := handlerConfig.IsRelevantEvent(event)
-
-	assert.Equal(t, false, result)
 }

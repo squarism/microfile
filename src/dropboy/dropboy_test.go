@@ -151,3 +151,12 @@ func TestIncomingFilesystemEvents(t *testing.T) {
 
 	mockHandlerConfig.AssertExpectations(t)
 }
+
+func TestIgnoreEvents(t *testing.T) {
+	event := fsnotify.Event{Name: "bleh.txt", Op: fsnotify.Chmod}
+	dropboy := NewDropboy()
+
+	result := dropboy.isRelevantEvent(event)
+
+	assert.Equal(t, false, result)
+}
