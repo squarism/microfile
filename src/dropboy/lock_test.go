@@ -3,6 +3,7 @@ package dropboy
 import (
 	"testing"
 
+	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -35,4 +36,15 @@ func TestLockSkipsPushWhenAlreadyThere(t *testing.T) {
 	err := locker.Lock(filename, hash)
 
 	assert.EqualError(t, err, "Already processing /var/www/uploads/song.mp3")
+}
+
+func TestEnsureWorkDirectory(t *testing.T) {
+	workDir := "/var/dropboy"
+	locker := NewLocker()
+	locker.AppFs = afero.NewMemMapFs() // for testing
+
+	locker.EnsureWorkDirectory(workDir)
+	exists, _ := afero.Exists(locker.AppFs, workDir)
+
+	assert.True(t, exists)
 }

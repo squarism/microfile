@@ -11,9 +11,10 @@ import (
 )
 
 type Config struct {
-	DefaultURL string  `hcl:"default_url"`
-	LogFile    string  `hcl:"log_file"`
-	Watches    []Watch `hcl:"watch"`
+	DefaultURL    string  `hcl:"default_url"`
+	WorkDirectory string  `hcl:"work_directory"`
+	LogFile       string  `hcl:"log_file"`
+	Watches       []Watch `hcl:"watch"`
 }
 
 type Watch struct {
