@@ -37,8 +37,15 @@ var dropboyValidConfig = config.Config{
 	},
 }
 
+var dropboyEmptyConfig = config.Config{
+	DefaultURL: "http://somewhere/valid_config",
+	Watches:    []config.Watch{},
+}
+
 func TestRegisterNothing(t *testing.T) {
 	dropboy := NewDropboy()
+	dropboy.LoadConfig(&dropboyEmptyConfig)
+
 	defer dropboy.Stop()
 
 	assert.Equal(t, 0, len(dropboy.Watches))
@@ -80,14 +87,14 @@ func TestRegisterFromConfig(t *testing.T) {
 		dir: []string{"http"},
 	}
 
-	dropboy.RegisterWatchesFromConfig(&dropboyValidConfig)
+	dropboy.LoadConfig(&dropboyValidConfig)
 
 	assert.Equal(t, expected, dropboy.Watches)
 }
 
 func TestRememberConfig(t *testing.T) {
 	dropboy := NewDropboy()
-	dropboy.RegisterWatchesFromConfig(&dropboyValidConfig)
+	dropboy.LoadConfig(&dropboyValidConfig)
 	expected := "http://somewhere/valid_config"
 
 	assert.Equal(t, expected, dropboy.Config.DefaultURL)
@@ -119,7 +126,7 @@ var mockHandlers = []handler.Handler{}
 
 func TestIncomingFilesystemEvents(t *testing.T) {
 	dropboy := NewDropboy()
-	dropboy.RegisterWatchesFromConfig(&dropboyValidConfig)
+	dropboy.LoadConfig(&dropboyValidConfig)
 	mockHandlerConfig := new(MockHandlerConfig)
 	changedFile, _ := filepath.Abs(fmt.Sprintf("%s/file_that_changed.txt", directoryToWatch))
 

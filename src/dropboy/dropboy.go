@@ -14,6 +14,7 @@ type dropboy struct {
 	Notifier      *fsnotify.Watcher
 	HandlerConfig HandlerFinder
 	Config        *config.Config
+	Locker        locker
 }
 
 func NewDropboy() dropboy {
@@ -24,17 +25,18 @@ func NewDropboy() dropboy {
 
 	d := dropboy{}
 	d.Notifier = notifier
+	d.Locker = NewLocker()
 
 	return d
 }
 
-func (w *dropboy) Stop() {
-	w.Notifier.Close()
+func (d *dropboy) Stop() {
+	d.Notifier.Close()
 }
 
-func (w *dropboy) Register(path string, actions []string) {
-	if w.Watches == nil {
-		w.Watches = make(map[string][]string)
+func (d *dropboy) Register(path string, actions []string) {
+	if d.Watches == nil {
+		d.Watches = make(map[string][]string)
 	}
 
 	absPath, err := filepath.Abs(path)
@@ -42,46 +44,59 @@ func (w *dropboy) Register(path string, actions []string) {
 		log.Fatal(err)
 	}
 
-	err = w.Notifier.Add(absPath)
+	err = d.Notifier.Add(absPath)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	// TODO: I don't know what this is really doing for us here
 	// a list of paths for later use?  The filesystem dropboy is stateless.
-	w.Watches[absPath] = actions
+	d.Watches[absPath] = actions
 }
 
-func (w *dropboy) RegisterWatchesFromConfig(c *config.Config) {
-	w.Config = c
-	w.HandlerConfig = &HandlerConfig{}
+func (d *dropboy) LoadConfig(c *config.Config) {
+	d.Config = c
+	d.HandlerConfig = &HandlerConfig{}
+
+	d.setupWorkDirectory()
 
 	for _, watch := range c.Watches {
 		actions := []string{}
 		for _, action := range watch.Actions {
 			actions = append(actions, action.Type)
 		}
-		w.Register(watch.Path, actions)
+		d.Register(watch.Path, actions)
 	}
 }
 
 // TODO: we are completely ignoring the dropboy.Errors channel here
 // create another method to handle those
-func (w *dropboy) HandleFilesystemEvents(channel chan fsnotify.Event) {
+func (d *dropboy) HandleFilesystemEvents(channel chan fsnotify.Event) {
 	select {
 	case event := <-channel:
 		path := event.Name
-		handlers := w.HandlerConfig.HandlersFor(path, *w.Config)
+		handlers := d.HandlerConfig.HandlersFor(path, *d.Config)
 
 		// We could reflect and determine the handler type here and switch on it
 		// for custom behavior outside the Handle method but why?  Why not just
 		// send the event to the method defined by the interface?  We validate the config elsewhere.
 		// We shouldn't have illegal handlers.
 		for _, h := range handlers {
-			if w.isRelevantEvent(event) {
+			if d.isRelevantEvent(event) {
 				h.Handle(event)
 			}
 		}
+	}
+}
+
+// Handles overriding the working directory for file locks from the config
+func (d *dropboy) setupWorkDirectory() {
+	// spew.Dump(d.Config)
+
+	if d.Config.WorkDirectory != "" {
+		d.Locker.WorkDirectory = d.Config.WorkDirectory
+	} else {
+		log.Info("Using default work directory")
 	}
 }
 

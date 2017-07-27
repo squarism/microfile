@@ -11,14 +11,14 @@ import (
 )
 
 func main() {
-
 	dboy := dropboy.NewDropboy()
 
 	c := new(config.Config)
 	c.Configure()
+
 	setupLogging(c)
 
-	dboy.RegisterWatchesFromConfig(c)
+	dboy.LoadConfig(c)
 
 	log.WithFields(log.Fields{"lifecycle": "startup"}).Info("Starting Dropboy")
 
