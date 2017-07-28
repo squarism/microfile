@@ -43,17 +43,13 @@ var dropboyEmptyConfig = config.Config{
 }
 
 func TestRegisterNothing(t *testing.T) {
-	dropboy := NewDropboy()
-	dropboy.LoadConfig(&dropboyEmptyConfig)
-
-	defer dropboy.Stop()
+	dropboy := NewDropboy(&dropboyEmptyConfig)
 
 	assert.Equal(t, 0, len(dropboy.Watches))
 }
 
 func TestRegisterWatch(t *testing.T) {
-	dropboy := NewDropboy()
-	defer dropboy.Stop()
+	dropboy := NewDropboy(&dropboyEmptyConfig)
 
 	dropboy.Register(directoryToWatch, []string{"http://localhost:3000/resumes"})
 
@@ -63,8 +59,7 @@ func TestRegisterWatch(t *testing.T) {
 func TestRegisterWatches(t *testing.T) {
 	realEstateDirectory := fmt.Sprint(directoryToWatch, "/real_estate")
 	musicDirectory := fmt.Sprint(directoryToWatch, "/music")
-	dropboy := NewDropboy()
-	defer dropboy.Stop()
+	dropboy := NewDropboy(&dropboyEmptyConfig)
 
 	dropboy.Register(realEstateDirectory, []string{"http://localhost:3000/image_shrinker"})
 	dropboy.Register(musicDirectory, []string{
@@ -81,20 +76,17 @@ func TestRegisterFromConfig(t *testing.T) {
 		log.Fatal("Fixtures directory is missing.")
 	}
 
-	dropboy := NewDropboy()
-	defer dropboy.Stop()
+	dropboy := NewDropboy(&dropboyValidConfig)
+
 	expected := map[string][]string{
 		dir: []string{"http"},
 	}
-
-	dropboy.LoadConfig(&dropboyValidConfig)
 
 	assert.Equal(t, expected, dropboy.Watches)
 }
 
 func TestRememberConfig(t *testing.T) {
-	dropboy := NewDropboy()
-	dropboy.LoadConfig(&dropboyValidConfig)
+	dropboy := NewDropboy(&dropboyValidConfig)
 	expected := "http://somewhere/valid_config"
 
 	assert.Equal(t, expected, dropboy.Config.DefaultURL)
@@ -125,8 +117,7 @@ func (m *MockHandler) Init(action config.Action) error {
 var mockHandlers = []handler.Handler{}
 
 func TestIncomingFilesystemEvents(t *testing.T) {
-	dropboy := NewDropboy()
-	dropboy.LoadConfig(&dropboyValidConfig)
+	dropboy := NewDropboy(&dropboyValidConfig)
 	mockHandlerConfig := new(MockHandlerConfig)
 	changedFile, _ := filepath.Abs(fmt.Sprintf("%s/file_that_changed.txt", directoryToWatch))
 
@@ -161,7 +152,7 @@ func TestIncomingFilesystemEvents(t *testing.T) {
 
 func TestIgnoreEvents(t *testing.T) {
 	event := fsnotify.Event{Name: "bleh.txt", Op: fsnotify.Chmod}
-	dropboy := NewDropboy()
+	dropboy := NewDropboy(&dropboyValidConfig)
 
 	result := dropboy.isRelevantEvent(event)
 

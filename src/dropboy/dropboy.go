@@ -17,16 +17,18 @@ type dropboy struct {
 	Locker        locker
 }
 
-func NewDropboy() dropboy {
+func NewDropboy(config *config.Config) dropboy {
 	notifier, err := fsnotify.NewWatcher()
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	d := dropboy{}
+	d.Watches = make(map[string][]string) // init a nil map
 	d.Notifier = notifier
 	d.Locker = NewLocker()
 
+	d.LoadConfig(config)
 	return d
 }
 
@@ -35,10 +37,6 @@ func (d *dropboy) Stop() {
 }
 
 func (d *dropboy) Register(path string, actions []string) {
-	if d.Watches == nil {
-		d.Watches = make(map[string][]string)
-	}
-
 	absPath, err := filepath.Abs(path)
 	if err != nil {
 		log.Fatal(err)
@@ -96,7 +94,7 @@ func (d *dropboy) setupWorkDirectory() {
 	if d.Config.WorkDirectory != "" {
 		d.Locker.WorkDirectory = d.Config.WorkDirectory
 	} else {
-		log.Info("Using default work directory")
+		log.Debug("Using default work directory")
 	}
 }
 

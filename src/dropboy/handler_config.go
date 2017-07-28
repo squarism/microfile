@@ -9,7 +9,7 @@ import (
 )
 
 // this would change as more action types are added
-var handlerNames = [2]string{"http", "log"}
+var handlerNames = [3]string{"http", "log", "imaginary"}
 
 type HandlerFinder interface {
 	HandlersFor(path string, config config.Config) []handler.Handler
