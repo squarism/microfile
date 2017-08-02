@@ -2,8 +2,8 @@
 
 > It's your dropbox folder's best friend.
 
-Dropboy watches a dropbox or folder for events and does something more meaningful with that event.  It's a
-daemon designed to be everything you need to put next to an upload folder.
+Dropboy relays file events and/or file contents to microservices.  It is easily configurable
+with simple rules and is easily deployable.
 
 _This project is not affiliated or directly releated to Dropbox Inc. or their service.  It can be used in conjunction with a Dropbox folder._
 
