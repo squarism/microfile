@@ -56,6 +56,19 @@ func (l *locker) Lock(filename string) {
 	}
 }
 
+func (l *locker) Unlock(filename string) {
+	hash := l.Hash(filename)
+	hashFilename := l.hashFilename(hash)
+
+	err := l.AppFs.Remove(hashFilename)
+	if err != nil {
+		log.WithFields(log.Fields{
+			"workDir":  l.WorkDirectory,
+			"filename": filename},
+		).Fatal("Major problem unlocking file")
+	}
+}
+
 func (l *locker) ensureWorkDirectory(path string) {
 	exists, err := afero.DirExists(l.AppFs, path)
 	if !exists && err == nil {
