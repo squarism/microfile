@@ -5,7 +5,7 @@
 Dropboy relays file events and/or file contents to microservices.  It is easily configurable
 with simple rules and is easily deployable.
 
-_This project is not affiliated or directly releated to Dropbox Inc. or their service.  It can be used in conjunction with a Dropbox folder._
+_This project is not affiliated or directly releated to Dropbox Inc.  However, it can be used in conjunction with a Dropbox folder._
 
 
 ## Neato Features
@@ -53,22 +53,57 @@ watch "/var/www/uploads/real_estate_photos" {
 
 Images will show up shrunk down and converted to `jpeg` in `/var/www/uploads/converted_images`.  Limitations of Imaginary are still present though.  It cannot handle all image types currently.
 
+
 ### New File Alert
+
 Let's say you have a folder where resumes show up and you'd like to notify Slack or something.
 If you have an API that can accept a `POST` and then do the Slack notification part then Dropboy is the perfect glue service.
 
 ```
-default_url = "http://localhost:9000"
-
 watch "/var/www/uploads/real_estate_photos" {
-  action "imaginary" {
+  action "http" {
     options {
-      output_directory = "/var/www/uploads/converted_images"
-      path = "/resize?width=128&type=jpeg&nocrop=true"
+      path = "http://your-api.local/file_arrival"
     }
   }
 }
 ```
+
+
+### Shared Folder Cleanup
+
+Let's say you have a Dropbox or a Google Drive folder shared among multiple things.
+Images arrive in png format but that wastes space.  They also aren't named with timestamps.
+You could easily write an API to rename to the current time.  Microfile can convert
+the image, drop it in a Microfile watched folder that can send an event to an API
+that renames the file.
+
+This is just an example of a simple workflow.
+
+```
+watch "/Users/you/Google Drive/screenshots" {
+  action "imaginary" {
+    options {
+      output_directory = "/Users/you/Google Drive/screenshots/jpegs"
+      path = "/convert?type=jpeg&quality=8"
+    }
+  }
+}
+
+watch "/Users/you/Google Drive/screenshots/jpegs" {
+  action "http" {
+    options {
+      path = "http://your-api.local/timestamp_rename"
+    }
+  }
+}
+```
+
+Because the folder is shared the server at `your-api.local` can take the file event and rename it.
+Microfile _could_ do the rename but that's not the point of composition.  In the future there may
+be other adapters and actions that Microfile takes on but it's mostly going to be around
+message passing and not work doing.
+
 
 
 ## Options
@@ -194,6 +229,18 @@ This is just a quick example, it's not an example of clean Rails code.
 * Templating - so you could watch for `*.exe` and have a Shell action `rm $file` or something.
 
 
+## Philosophy
+
+Microfile is about passing message and not doing work itself.  This gets the problem
+away from possibly weak machines and into a full language powered API or service.  Microfile is
+defined by a config file which will never be as powerful and flexible as a language.
+
+For example: 
+- image conversion is done by passing what's needed to a service.
+- file renaming is done by passing the minimum of what's need to rename a file.
+- testing a backup archive is done somewhere else even though it's easy to imagine a shell-out.
+
+
 ## License
 Dropboy is released under the [MIT License](http://www.opensource.org/licenses/MIT).
 
@@ -204,3 +251,4 @@ create a pull request with no code!
 
 Also, small suggestion for this project and any other: Please do not spend too much of you time on a fork or branch without
 talking about it first.  It's much easier to pre-discuss an idea before a ton of code and time.
+
