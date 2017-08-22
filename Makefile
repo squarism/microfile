@@ -6,5 +6,5 @@ test:
 
 dist:
 	GOOS=linux gb build
-	mv bin/dropboy-linux-amd64 bin/dropboy.linux
+	mv bin/microfile-linux-amd64 bin/microfile.linux
 

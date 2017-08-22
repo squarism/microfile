@@ -1,4 +1,4 @@
-package dropboy
+package microfile
 
 import (
 	"fmt"
@@ -11,18 +11,18 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 
-	"dropboy/config"
-	"dropboy/handler"
+	"microfile/config"
+	"microfile/handler"
 )
 
 func fixturesDirectory() string {
-	d, _ := filepath.Abs("./../../fixtures/dropbox")
-	return d
+	directory, _ := filepath.Abs("./../../fixtures/dropbox")
+	return directory
 }
 
 var directoryToWatch string = fixturesDirectory()
 
-var dropboyValidConfig = config.Config{
+var microfileValidConfig = config.Config{
 	DefaultURL: "http://somewhere/valid_config",
 	Watches: []config.Watch{
 		{
@@ -37,37 +37,37 @@ var dropboyValidConfig = config.Config{
 	},
 }
 
-var dropboyEmptyConfig = config.Config{
+var microfileEmptyConfig = config.Config{
 	DefaultURL: "http://somewhere/valid_config",
 	Watches:    []config.Watch{},
 }
 
 func TestRegisterNothing(t *testing.T) {
-	dropboy := NewDropboy(&dropboyEmptyConfig)
+	microfile := NewMicrofile(&microfileEmptyConfig)
 
-	assert.Equal(t, 0, len(dropboy.Watches))
+	assert.Equal(t, 0, len(microfile.Watches))
 }
 
 func TestRegisterWatch(t *testing.T) {
-	dropboy := NewDropboy(&dropboyEmptyConfig)
+	microfile := NewMicrofile(&microfileEmptyConfig)
 
-	dropboy.Register(directoryToWatch, []string{"http://localhost:3000/resumes"})
+	microfile.Register(directoryToWatch, []string{"http://localhost:3000/resumes"})
 
-	assert.Equal(t, 1, len(dropboy.Watches))
+	assert.Equal(t, 1, len(microfile.Watches))
 }
 
 func TestRegisterWatches(t *testing.T) {
 	realEstateDirectory := fmt.Sprint(directoryToWatch, "/real_estate")
 	musicDirectory := fmt.Sprint(directoryToWatch, "/music")
-	dropboy := NewDropboy(&dropboyEmptyConfig)
+	microfile := NewMicrofile(&microfileEmptyConfig)
 
-	dropboy.Register(realEstateDirectory, []string{"http://localhost:3000/image_shrinker"})
-	dropboy.Register(musicDirectory, []string{
+	microfile.Register(realEstateDirectory, []string{"http://localhost:3000/image_shrinker"})
+	microfile.Register(musicDirectory, []string{
 		"http://localhost:3000/copyright_alerter",
 		"http://localhost:3000/recompressor",
 	})
 
-	assert.Equal(t, 2, len(dropboy.Watches))
+	assert.Equal(t, 2, len(microfile.Watches))
 }
 
 func TestRegisterFromConfig(t *testing.T) {
@@ -76,20 +76,20 @@ func TestRegisterFromConfig(t *testing.T) {
 		log.Fatal("Fixtures directory is missing.")
 	}
 
-	dropboy := NewDropboy(&dropboyValidConfig)
+	microfile := NewMicrofile(&microfileValidConfig)
 
 	expected := map[string][]string{
 		dir: []string{"http"},
 	}
 
-	assert.Equal(t, expected, dropboy.Watches)
+	assert.Equal(t, expected, microfile.Watches)
 }
 
 func TestRememberConfig(t *testing.T) {
-	dropboy := NewDropboy(&dropboyValidConfig)
+	microfile := NewMicrofile(&microfileValidConfig)
 	expected := "http://somewhere/valid_config"
 
-	assert.Equal(t, expected, dropboy.Config.DefaultURL)
+	assert.Equal(t, expected, microfile.Config.DefaultURL)
 }
 
 // wow mocking in Go is crazy hard
@@ -117,7 +117,7 @@ func (m *MockHandler) Init(action config.Action) error {
 var mockHandlers = []handler.Handler{}
 
 func TestIncomingFilesystemEvents(t *testing.T) {
-	dropboy := NewDropboy(&dropboyValidConfig)
+	microfile := NewMicrofile(&microfileValidConfig)
 	mockHandlerConfig := new(MockHandlerConfig)
 	changedFile, _ := filepath.Abs(fmt.Sprintf("%s/file_that_changed.txt", directoryToWatch))
 
@@ -128,14 +128,14 @@ func TestIncomingFilesystemEvents(t *testing.T) {
 	mockHandler.On("Handle", event)
 	mockHandlers = append(mockHandlers, mockHandler)
 
-	dropboy.HandlerConfig = mockHandlerConfig
+	microfile.HandlerConfig = mockHandlerConfig
 	mockHandlerConfig.On("HandlersFor", changedFile).Return(mockHandlers)
 
 	// we need to make sure our test doesn't exit too soon
 	done := make(chan bool, 2)
 
 	go func(done chan bool) {
-		dropboy.HandleFilesystemEvents(channel)
+		microfile.HandleFilesystemEvents(channel)
 		done <- true
 	}(done)
 
@@ -152,9 +152,9 @@ func TestIncomingFilesystemEvents(t *testing.T) {
 
 func TestIgnoreEvents(t *testing.T) {
 	event := fsnotify.Event{Name: "bleh.txt", Op: fsnotify.Chmod}
-	dropboy := NewDropboy(&dropboyValidConfig)
+	microfile := NewMicrofile(&microfileValidConfig)
 
-	result := dropboy.isRelevantEvent(event)
+	result := microfile.isRelevantEvent(event)
 
 	assert.Equal(t, false, result)
 }

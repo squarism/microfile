@@ -65,5 +65,5 @@ func TestHomeConfigDir(t *testing.T) {
 	defer patchEnv("HOME", "/custom/path")()
 
 	c := new(Config)
-	assert.Equal(t, "/custom/path/.dropboy/", c.homeConfigDirectory())
+	assert.Equal(t, "/custom/path/.microfile/", c.homeConfigDirectory())
 }

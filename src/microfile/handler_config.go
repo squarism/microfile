@@ -1,11 +1,11 @@
-package dropboy
+package microfile
 
 import (
 	"fmt"
 	"path/filepath"
 
-	"dropboy/config"
-	"dropboy/handler"
+	"microfile/config"
+	"microfile/handler"
 )
 
 // this would change as more action types are added

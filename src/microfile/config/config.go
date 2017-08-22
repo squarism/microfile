@@ -54,15 +54,14 @@ func (c *Config) homeConfigDirectory() string {
 		log.WithFields(log.Fields{"lifecycle": "config"}).Fatal("Cannot tell what the home directory is")
 	}
 
-	// This will allow users to put the config in ~/.dropboy/dropboy.yml
-	homeConfigDirectory := fmt.Sprintf("%s/.dropboy/", home)
+	// This will allow users to put the config in ~/.microfile/microfile.hcl
+	homeConfigDirectory := fmt.Sprintf("%s/.microfile/", home)
 	return homeConfigDirectory
 }
 
 // set config options and default values in the config
 func setConfigurationDefaults() {
-	// viper.SetDefault("DefaultURL", "http://localhost:3000")
-	viper.SetConfigName("dropboy")
+	viper.SetConfigName("microfile")
 	viper.SetConfigType("hcl")
 }
 

@@ -1,8 +1,8 @@
-# Dropboy
+# Microfile
 
 > It's your dropbox folder's best friend.
 
-Dropboy relays file events and/or file contents to microservices.  It is easily configurable
+Microfile relays file events and/or file contents to microservices.  It is easily configurable
 with simple rules and is easily deployable.
 
 _This project is not affiliated or directly releated to Dropbox Inc.  However, it can be used in conjunction with a Dropbox folder._
@@ -21,10 +21,10 @@ _This project is not affiliated or directly releated to Dropbox Inc.  However, i
 ## Up and Running
 1. Download a binary release.
 2. Create a config file (more realistic examples are below) in one of three places:
-    1. `$HOME/.dropboy/dropboy.hcl`
-    2. `/usr/local/etc/dropboy.hcl`
-    3. `./dropboy.hcl` (next to the binary `dropboy`) you downloaded.
-3. Start Dropboy: `./dropboy`
+    1. `$HOME/.microfile/microfile.hcl`
+    2. `/usr/local/etc/microfile.hcl`
+    3. `./microfile.hcl` (next to the binary `microfile`) you downloaded.
+3. Start Microfile: `./microfile`
 
 See below for what actually goes in the config file!
 
@@ -34,9 +34,9 @@ See below for what actually goes in the config file!
 ### Image Shrinking
 Let's say you have a dropbox for clients to put pictures in.  And they upload huge images off their camera.  And you'd rather do something else than write a script and cron it up to shrink down the pictures.
 
-Create a basic _Dropboy_ config file in `~/.dropboy/dropboy.hcl`.
+Create a basic _Microfile_ config file in `~/.microfile/microfile.hcl`.
 ```
-log_file = "/var/log/dropboy.log"
+log_file = "/var/log/microfile.log"
 default_url = "http://localhost:9000"
 
 watch "/var/www/uploads/real_estate_photos" {
@@ -57,7 +57,7 @@ Images will show up shrunk down and converted to `jpeg` in `/var/www/uploads/con
 ### New File Alert
 
 Let's say you have a folder where resumes show up and you'd like to notify Slack or something.
-If you have an API that can accept a `POST` and then do the Slack notification part then Dropboy is the perfect glue service.
+If you have an API that can accept a `POST` and then do the Slack notification part then Microfile is the perfect glue service.
 
 ```
 watch "/var/www/uploads/real_estate_photos" {
@@ -118,7 +118,7 @@ Options go at the top level of the config file.
 
 ```
 default_url = "http://resume-alerting.service:9000/api"
-log_file = "/var/log/dropboy.log"
+log_file = "/var/log/microfile.log"
 
 watch "/tmp/dropbox/resumes" {
   action "http" {
@@ -134,7 +134,7 @@ showed up.
 
 ## Actions
 You can have multiple actions per watch.  In that case, the actions happen in order of the config file
-although it shouldn't matter too much since Dropboy doesn't have complex workflow features.
+although it shouldn't matter too much since Microfile doesn't have complex workflow features.
 
 ### Log
 Simply print a message when a file changes
@@ -170,7 +170,7 @@ partial url | `/resize | http://localhost:9000/resize?width=256` |
 
 ## A Custom API Example
 Ok, so what if you want to write an API?  Here's a rough example of how you could process a file coming from
-Dropboy in Rails.
+Microfile in Rails.
 
 Create a controller (in this case `thumbnail_controller` and handle a `POST`.
 
@@ -216,7 +216,7 @@ def convert_to_thumbnail(source, destination)
   system(convert_command)
 end
 ```
-Dropboy will send contents to this API and then the thumbnail will show up in the Rails' `./tmp` folder.
+Microfile will send contents to this API and then the thumbnail will show up in the Rails' `./tmp` folder.
 Neat huh.  Note that this requires imagemagick to be installed because this API is just shelling out.
 This is just a quick example, it's not an example of clean Rails code.
 
@@ -242,11 +242,11 @@ For example:
 
 
 ## License
-Dropboy is released under the [MIT License](http://www.opensource.org/licenses/MIT).
+Microfile is released under the [MIT License](http://www.opensource.org/licenses/MIT).
 
 
 ## Contributing
-I encourage anyone to give feedback no matter what level.  If Dropboy is close to what you want but not quite,
+I encourage anyone to give feedback no matter what level.  If Microfile is close to what you want but not quite,
 create a pull request with no code!
 
 Also, small suggestion for this project and any other: Please do not spend too much of you time on a fork or branch without

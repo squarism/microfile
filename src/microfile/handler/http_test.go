@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	httpmock "gopkg.in/jarcoal/httpmock.v1"
 
-	"dropboy/config"
+	"microfile/config"
 )
 
 func TestHttpSendEvent(t *testing.T) {

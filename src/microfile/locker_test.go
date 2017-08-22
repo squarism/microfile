@@ -1,4 +1,4 @@
-package dropboy
+package microfile
 
 import (
 	"path/filepath"
@@ -9,7 +9,7 @@ import (
 )
 
 var filename string = "/var/www/uploads/song.mp3"
-var expectedLockedFile string = "/var/dropboy/733388170efcc73067c22d5e98c55008"
+var expectedLockedFile string = "/var/microfile/733388170efcc73067c22d5e98c55008"
 
 func TestHashFile(t *testing.T) {
 	locker := NewLocker()
@@ -45,7 +45,7 @@ func TestEnsureWorkDirectory(t *testing.T) {
 
 func TestHashFileName(t *testing.T) {
 	locker := NewLocker()
-	locker.WorkDirectory = "/var/dropboy"
+	locker.WorkDirectory = "/var/microfile"
 	hash := "733388170efcc73067c22d5e98c55008"
 
 	result := locker.hashFilename(hash)
@@ -55,7 +55,7 @@ func TestHashFileName(t *testing.T) {
 
 func TestLocking(t *testing.T) {
 	locker := NewLocker()
-	locker.WorkDirectory = "/var/dropboy"
+	locker.WorkDirectory = "/var/microfile"
 
 	locker.AppFs = afero.NewMemMapFs()
 	locker.AppFs.MkdirAll(filepath.Base(filename), 0755)
@@ -70,7 +70,7 @@ func TestLocking(t *testing.T) {
 
 func TestUnlocking(t *testing.T) {
 	locker := NewLocker()
-	locker.WorkDirectory = "/var/dropboy"
+	locker.WorkDirectory = "/var/microfile"
 
 	locker.AppFs = afero.NewMemMapFs()
 	locker.AppFs.MkdirAll(filepath.Base(filename), 0755)

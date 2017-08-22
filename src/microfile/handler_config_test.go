@@ -1,12 +1,12 @@
-package dropboy
+package microfile
 
 import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 
-	"dropboy/config"
-	"dropboy/handler"
+	"microfile/config"
+	"microfile/handler"
 )
 
 var validConfig = config.Config{

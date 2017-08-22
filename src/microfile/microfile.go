@@ -1,4 +1,4 @@
-package dropboy
+package microfile
 
 import (
 	"path/filepath"
@@ -6,10 +6,10 @@ import (
 	"github.com/fsnotify/fsnotify"
 	log "github.com/sirupsen/logrus"
 
-	"dropboy/config"
+	"microfile/config"
 )
 
-type dropboy struct {
+type microfile struct {
 	Watches       map[string][]string
 	Notifier      *fsnotify.Watcher
 	HandlerConfig HandlerFinder
@@ -17,70 +17,70 @@ type dropboy struct {
 	Locker        locker
 }
 
-func NewDropboy(config *config.Config) dropboy {
+func NewMicrofile(config *config.Config) microfile {
 	notifier, err := fsnotify.NewWatcher()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	d := dropboy{}
-	d.Watches = make(map[string][]string) // init a nil map
-	d.Notifier = notifier
-	d.Locker = NewLocker()
+	mf := microfile{}
+	mf.Watches = make(map[string][]string) // init a nil map
+	mf.Notifier = notifier
+	mf.Locker = NewLocker()
 
-	d.LoadConfig(config)
-	return d
+	mf.LoadConfig(config)
+	return mf
 }
 
-func (d *dropboy) Stop() {
-	d.Notifier.Close()
+func (m *microfile) Stop() {
+	m.Notifier.Close()
 }
 
-func (d *dropboy) Register(path string, actions []string) {
+func (m *microfile) Register(path string, actions []string) {
 	absPath, err := filepath.Abs(path)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	err = d.Notifier.Add(absPath)
+	err = m.Notifier.Add(absPath)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	// TODO: I don't know what this is really doing for us here
-	// a list of paths for later use?  The filesystem dropboy is stateless.
-	d.Watches[absPath] = actions
+	// a list of paths for later use?  The filesystem microfile is stateless.
+	m.Watches[absPath] = actions
 }
 
-func (d *dropboy) LoadConfig(c *config.Config) {
-	d.Config = c
-	d.HandlerConfig = &HandlerConfig{}
+func (m *microfile) LoadConfig(c *config.Config) {
+	m.Config = c
+	m.HandlerConfig = &HandlerConfig{}
 
-	d.setupWorkDirectory()
+	m.setupWorkDirectory()
 
 	for _, watch := range c.Watches {
 		actions := []string{}
 		for _, action := range watch.Actions {
 			actions = append(actions, action.Type)
 		}
-		d.Register(watch.Path, actions)
+		m.Register(watch.Path, actions)
 	}
 }
 
-// TODO: we are completely ignoring the dropboy.Errors channel here
+// TODO: we are completely ignoring the microfile.Errors channel here
 // create another method to handle those
-func (d *dropboy) HandleFilesystemEvents(channel chan fsnotify.Event) {
+func (m *microfile) HandleFilesystemEvents(channel chan fsnotify.Event) {
 	select {
 	case event := <-channel:
 		path := event.Name
-		handlers := d.HandlerConfig.HandlersFor(path, *d.Config)
+		handlers := m.HandlerConfig.HandlersFor(path, *m.Config)
 
 		// We could reflect and determine the handler type here and switch on it
 		// for custom behavior outside the Handle method but why?  Why not just
 		// send the event to the method defined by the interface?  We validate the config elsewhere.
 		// We shouldn't have illegal handlers.
 		for _, h := range handlers {
-			if d.isRelevantEvent(event) {
+			if m.isRelevantEvent(event) {
 				h.Handle(event)
 			}
 		}
@@ -88,17 +88,15 @@ func (d *dropboy) HandleFilesystemEvents(channel chan fsnotify.Event) {
 }
 
 // Handles overriding the working directory for file locks from the config
-func (d *dropboy) setupWorkDirectory() {
-	// spew.Dump(d.Config)
-
-	if d.Config.WorkDirectory != "" {
-		d.Locker.WorkDirectory = d.Config.WorkDirectory
+func (m *microfile) setupWorkDirectory() {
+	if m.Config.WorkDirectory != "" {
+		m.Locker.WorkDirectory = m.Config.WorkDirectory
 	} else {
 		log.Debug("Using default work directory")
 	}
 }
 
 // global ignore of sorts
-func (d *dropboy) isRelevantEvent(event fsnotify.Event) bool {
+func (m *microfile) isRelevantEvent(event fsnotify.Event) bool {
 	return (event.Op != fsnotify.Chmod)
 }

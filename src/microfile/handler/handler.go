@@ -3,7 +3,7 @@ package handler
 import (
 	"github.com/fsnotify/fsnotify"
 
-	"dropboy/config"
+	"microfile/config"
 )
 
 type Handler interface {

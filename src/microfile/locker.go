@@ -1,4 +1,4 @@
-package dropboy
+package microfile
 
 import (
 	"crypto/md5"
@@ -21,7 +21,7 @@ func NewLocker() locker {
 	l := locker{}
 	l.AllActive = make(map[string]string)
 	l.AppFs = afero.NewOsFs()
-	l.WorkDirectory = filepath.Join(os.TempDir(), "dropboy")
+	l.WorkDirectory = filepath.Join(os.TempDir(), "microfile")
 
 	return l
 }
