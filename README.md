@@ -5,7 +5,7 @@
 Microfile relays file events and/or file contents to microservices.  It is easily configurable
 with simple rules and is easily deployable.
 
-_This project is not affiliated or directly releated to Dropbox Inc.  However, it can be used in conjunction with a Dropbox folder._
+_This project is not affiliated or directly related to Dropbox Inc.  However, it can be used in conjunction with a Dropbox folder._
 
 
 ## Neato Features
@@ -235,7 +235,7 @@ Microfile is about passing message and not doing work itself.  This gets the pro
 away from possibly weak machines and into a full language powered API or service.  Microfile is
 defined by a config file which will never be as powerful and flexible as a language.
 
-For example: 
+For example:
 - image conversion is done by passing what's needed to a service.
 - file renaming is done by passing the minimum of what's need to rename a file.
 - testing a backup archive is done somewhere else even though it's easy to imagine a shell-out.
@@ -251,4 +251,3 @@ create a pull request with no code!
 
 Also, small suggestion for this project and any other: Please do not spend too much of you time on a fork or branch without
 talking about it first.  It's much easier to pre-discuss an idea before a ton of code and time.
-
