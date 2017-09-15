@@ -161,11 +161,24 @@ Config Option: `action "imaginary"`
 
 
 ##### Additional Options
+
 | Option | Use | Example |
 |---|---|---|
-| path| URL of imaginary [operation](https://github.com/h2non/imaginary#http-api) endpoint.  Can be full or
-partial url | `/resize | http://localhost:9000/resize?width=256` | |
-| output_directory | Where to store processed images | `"/var/www/processed_images"` | |
+| output_directory | Where to store processed images | `"/var/www/processed_images"` |
+| path | URL of imaginary [operation](https://github.com/h2non/imaginary#http-api) endpoint.  Can be full or partial url | http://localhost:9000/resize?width=256` |
+
+
+The endpoint of `/resize` can be any [feature of imaginary](https://github.com/h2non/imaginary#supported-image-operations).  Resize is just an example.
+
+Example:
+```hcl
+action "imaginary" {
+  options {
+    output_directory = "/Users/you/Google Drive/screenshots/jpegs"
+    path = "/resize?type=jpeg"
+  }
+}
+```
 
 
 ## A Custom API Example
@@ -229,7 +242,7 @@ These are coming ...
 * Catch up mode - file system changes that are missed when it's not running
 * Wildcard filtering - if you want to just watch a path for `*.pdf`
 * Chmod events are straight up ignored
-* Templating - so you could watch for `*.exe` and have a Shell action `rm $file` or something.  Or post to an existing API (json template).
+* Templating - so you could watch for `*.exe` and have a Shell action `rm $file` or something.  Or post to an existing API (custom json template).
 * Recursive watching of folders - hard to check and solve right now
 
 
