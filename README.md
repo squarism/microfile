@@ -1,14 +1,10 @@
-# Microfile
-
-> It's your dropbox folder's best friend.
+![image](https://github.com/squarism/microfile/raw/images/images/Microfile.png)
 
 Microfile relays file events and/or file contents to microservices.  It is easily configurable
-with simple rules and is easily deployable.
-
-_This project is not affiliated or directly related to Dropbox Inc.  However, it can be used in conjunction with a Dropbox folder._
+with simple rules and is easily deployable.  It's power comes from how you wire it up.
 
 
-## Neato Features
+## Features
 
 * Super readable Hashicorp configuration file.
 * Available as a binary.  Easy to deploy!  <3 ops
@@ -26,12 +22,15 @@ _This project is not affiliated or directly related to Dropbox Inc.  However, it
     3. `./microfile.hcl` (next to the binary `microfile`) you downloaded.
 3. Start Microfile: `./microfile`
 
-See below for what actually goes in the config file!
+See below for what actually goes in the config file.
 
 
 ## Use Cases and Examples
 
 ### Image Shrinking
+
+![image](https://github.com/squarism/microfile/raw/images/images/microfile_image_api.png)
+
 Let's say you have a dropbox for clients to put pictures in.  And they upload huge images off their camera.  And you'd rather do something else than write a script and cron it up to shrink down the pictures.
 
 Create a basic _Microfile_ config file in `~/.microfile/microfile.hcl`.
@@ -111,9 +110,9 @@ Options go at the top level of the config file.
 
 | Option | Use | Example |
 |---|---|---|
-| `default_url` | Reduces the amount of typing.  Partial paths in actions will use this value. |  "http://localhost:9000" |
-| `log_file` | File to write logs to.  If left blank, goes to `stdout`. |
-| `watch` | A single folder to watch.  Recursion not implemented right now.  You can watch multiple things. |
+| default_url | Reduces the amount of typing.  Partial paths in actions will use this value. |  `http://localhost:9000` |
+| `log_file` | File to write logs to.  If left blank, goes to `stdout`. | `/tmp/microfile.log` |
+| `watch` | A single folder to watch.  You can watch multiple things.  No need to escape paths.  Shell expansion like `~` does not work.  No recursion support right now.  | `watch "/var/foo"` |
 
 
 ```
@@ -149,26 +148,28 @@ Send a custom `POST` to your service
 Config Option: `action "http"`
 
 ##### Additional Options
-| Option | Use |
-|---|---|
+| Option | Use | Example |
+|---|---|---|
 | path | Full or partial URL path to send a message to |
 | send_contents | Send the file contents as base64?  ("true" or "false") |
 
 
 ### Imaginary
+
 Send the changed file to the imaginary microservice to do image operations
 Config Option: `action "imaginary"`
 
 
 ##### Additional Options
 | Option | Use | Example |
-|---|---|
+|---|---|---|
 | path| URL of imaginary [operation](https://github.com/h2non/imaginary#http-api) endpoint.  Can be full or
-partial url | `/resize | http://localhost:9000/resize?width=256` |
-| output_directory | Where to store processed images | `"/var/www/processed_images"` |
+partial url | `/resize | http://localhost:9000/resize?width=256` | |
+| output_directory | Where to store processed images | `"/var/www/processed_images"` | |
 
 
 ## A Custom API Example
+
 Ok, so what if you want to write an API?  Here's a rough example of how you could process a file coming from
 Microfile in Rails.
 
@@ -221,12 +222,15 @@ Neat huh.  Note that this requires imagemagick to be installed because this API 
 This is just a quick example, it's not an example of clean Rails code.
 
 
-## Missing Features
-* Recursion - hard to check and solve right now
+## Missing Features and TODO
+
+These are coming ...
+
 * Catch up mode - file system changes that are missed when it's not running
 * Wildcard filtering - if you want to just watch a path for `*.pdf`
 * Chmod events are straight up ignored
-* Templating - so you could watch for `*.exe` and have a Shell action `rm $file` or something.
+* Templating - so you could watch for `*.exe` and have a Shell action `rm $file` or something.  Or post to an existing API (json template).
+* Recursive watching of folders - hard to check and solve right now
 
 
 ## Philosophy
@@ -242,6 +246,7 @@ For example:
 
 
 ## License
+
 Microfile is released under the [MIT License](http://www.opensource.org/licenses/MIT).
 
 
