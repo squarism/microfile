@@ -31,7 +31,7 @@ type Action struct {
 func populateConfig(c *Config) {
 	err := viper.ReadInConfig()
 	if err != nil {
-		log.WithFields(log.Fields{"lifecycle": "config"}).Fatal("Can't read config file")
+		log.WithFields(log.Fields{"lifecycle": "config", "detail": err}).Fatal("Can't read config file")
 	}
 
 	// because viper doesn't pass HCL flags down for auto-key niceness

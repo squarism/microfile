@@ -10,6 +10,9 @@ import (
 	"microfile/config"
 )
 
+// This is the main daemon binary for Microfile.
+// It handles entry into other parts of the programs and tries not to
+// do work itself that is unrelated to the CLI, invoking or the daemon itself.
 func main() {
 	c := new(config.Config)
 	c.Configure()
@@ -20,6 +23,7 @@ func main() {
 
 	log.WithFields(log.Fields{"lifecycle": "startup"}).Info("Starting Microfile")
 
+	// Handling Ctrl-C as an interrupt (irq)
 	irq := make(chan os.Signal, 1)
 	signal.Notify(irq, os.Interrupt)
 	go func() {
@@ -30,6 +34,7 @@ func main() {
 		}
 	}()
 
+	// Infinite loop until something interrupts
 	for {
 		mf.HandleFilesystemEvents(mf.Notifier.Events)
 	}
