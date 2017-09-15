@@ -1,7 +1,7 @@
 ![image](https://github.com/squarism/microfile/raw/images/images/Microfile.png)
 
 Microfile relays file events and/or file contents to microservices.  It is easily configurable
-with simple rules and is easily deployable.  It's power comes from how you wire it up.
+with simple rules and is easily deployable.  Its power comes from how you wire it up.
 
 
 ## Features
