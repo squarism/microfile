@@ -27,6 +27,7 @@ Temporary Items
 *.so
 bin
 pkg
+release
 
 # Folders
 _obj
