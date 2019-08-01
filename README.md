@@ -14,6 +14,20 @@ with simple rules and is easily deployable.  Its power comes from how you wire i
 * Gets your problem away from possibly a cheap fileserver and into a higher level of abstraction.
 
 
+## Philosophy
+
+Microfile is about message passing and not doing work itself.  This gets the problem
+away from possibly weak machines and gets the problem to a service powered by a full language.
+Microfile is controlled by a config file which will never be as powerful and flexible as a language.
+Because of this, a shell-out action is avoided on purpose.  Microfile is about passing messages
+and embracing tiny services.  Shell outs limit reuse.
+
+For example:
+- image conversion is done by passing what's needed to a service.
+- file renaming is done by passing the minimum of what's need to rename a file.
+- testing a backup archive is done somewhere else even though it's easy to imagine a shell-out.
+
+
 ## Up and Running
 1. Download a binary release.
 2. Create a config file (more realistic examples are below) in one of three places:
@@ -244,20 +258,6 @@ These are coming ...
 * Chmod events are straight up ignored
 * Templating - so you could watch for `*.exe` and have a Shell action `rm $file` or something.  Or post to an existing API (custom json template).
 * Recursive watching of folders - hard to check and solve right now
-
-
-## Philosophy
-
-Microfile is about message passing and not doing work itself.  This gets the problem
-away from possibly weak machines and gets the problem to a service powered by a full language.
-Microfile is controlled by a config file which will never be as powerful and flexible as a language.
-Because of this, a shell-out action is avoided on purpose.  Microfile is about passing messages
-and embracing tiny services.  Shell outs limit reuse.
-
-For example:
-- image conversion is done by passing what's needed to a service.
-- file renaming is done by passing the minimum of what's need to rename a file.
-- testing a backup archive is done somewhere else even though it's easy to imagine a shell-out.
 
 
 ## License
